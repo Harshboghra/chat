@@ -5,12 +5,8 @@ import LoginForm from "./pages/Login/Login";
 import { useUserContext } from "./context/UserContext";
 
 function App() {
-  const { user } = useUserContext();
-  return (
-    <>
-      <LoginForm />
-    </>
-  );
+  const { user, isLoding } = useUserContext();
+  return <>{!isLoding && <>{user ? <>login deno</> : <LoginForm />}</>}</>;
 }
 
 export default App;

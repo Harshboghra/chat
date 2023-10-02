@@ -5,6 +5,8 @@ import * as Yup from "yup";
 import { Button } from "primereact/button";
 import { Input, ErrorMessage } from "../../component/Form";
 import { useUserContext } from "../../context/UserContext";
+import authService from "../../service/auth/auth.service";
+import userService from "../../service/user/user.service";
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
@@ -13,16 +15,20 @@ const validationSchema = Yup.object().shape({
   password: Yup.string().required("Password is required"),
 });
 const LoginForm: React.FC = () => {
-  const { login } = useUserContext();
+  const { login: setLogin } = useUserContext();
   const initialValues = {
     email: "",
     password: "",
     id: 1,
   };
 
-  const handleLogin = (values: any) => {
-    login(values);
-    // Handle login logic here
+  const handleLogin = async (values: any) => {
+    const token = await authService.login(values);
+    if (token) {
+      localStorage.setItem("token", token.token);
+      const user = await userService.current();
+      setLogin(user);
+    }
   };
 
   return (

@@ -1,4 +1,12 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+  useMemo,
+} from "react";
+import userService from "../service/user/user.service";
 
 interface User {
   id: number;
@@ -11,6 +19,7 @@ interface UserContextType {
   user: User | null;
   login: (userData: User) => void;
   logout: () => void;
+  isLoding: boolean;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -29,6 +38,14 @@ interface UserProviderProps {
 
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [isLoding, setIsLoding] = useState(true);
+  useEffect(() => {
+    setIsLoding(true);
+    userService.current().then((res) => {
+      setIsLoding(false);
+      if (res) setUser(res);
+    });
+  }, []);
 
   const login = (userData: User) => {
     setUser(userData);
@@ -42,6 +59,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     user,
     login,
     logout,
+    isLoding,
   };
 
   return (
