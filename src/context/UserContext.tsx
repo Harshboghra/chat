@@ -41,10 +41,17 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [isLoding, setIsLoding] = useState(true);
   useEffect(() => {
     setIsLoding(true);
-    userService.current().then((res) => {
-      setIsLoding(false);
-      if (res) setUser(res);
-    });
+    userService
+      .current()
+      .then((res) => {
+        if (res) setUser(res);
+      })
+      .catch(() => {
+        localStorage.removeItem("token");
+      })
+      .finally(() => {
+        setIsLoding(false);
+      });
   }, []);
 
   const login = (userData: User) => {

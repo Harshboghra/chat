@@ -1,3 +1,16 @@
-/* @tailwind base; */
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* Style for the custom scrollbar track */
+*::-webkit-scrollbar {
+    width: 6px;
+    background: #8e8e8e5a;
+    border-radius: 50px;
+}
+
+/* Style for the custom scrollbar thumb (handle) */
+*::-webkit-scrollbar-thumb {
+    border-radius: 50px;
+    background: #404040;
+    /* Change the color as desired */
+}

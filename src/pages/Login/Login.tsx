@@ -1,5 +1,5 @@
 // src/LoginForm.tsx
-import React from "react";
+import React, { useRef } from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { Button } from "primereact/button";
@@ -7,6 +7,7 @@ import { Input, ErrorMessage } from "../../component/Form";
 import { useUserContext } from "../../context/UserContext";
 import authService from "../../service/auth/auth.service";
 import userService from "../../service/user/user.service";
+import { Toast } from "primereact/toast";
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
@@ -14,8 +15,9 @@ const validationSchema = Yup.object().shape({
     .required("Email is required"),
   password: Yup.string().required("Password is required"),
 });
-const LoginForm: React.FC = () => {
+const LoginForm = () => {
   const { login: setLogin } = useUserContext();
+  const toast = useRef<Toast | any>(null);
   const initialValues = {
     email: "",
     password: "",
@@ -23,11 +25,18 @@ const LoginForm: React.FC = () => {
   };
 
   const handleLogin = async (values: any) => {
-    const token = await authService.login(values);
-    if (token) {
+    try {
+      const token = await authService.login(values);
       localStorage.setItem("token", token.token);
-      const user = await userService.current();
-      setLogin(user);
+      window.location.pathname = "/";
+    } catch (error: any) {
+      toast.current.show({
+        severity: "error",
+        summary: "Login Error",
+        detail:
+          error.response.data.message ||
+          "An error occurred during login. Please try again.",
+      });
     }
   };
 
@@ -76,6 +85,7 @@ const LoginForm: React.FC = () => {
           </Form>
         </Formik>
       </div>
+      <Toast ref={toast} />
     </div>
   );
 };
